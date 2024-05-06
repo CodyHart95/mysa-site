@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+/mysa-backend/obj
+/mysa-backend/docker
+/mysa-backend/bin
+/mysa-backend/.vs
