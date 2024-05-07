@@ -23,6 +23,8 @@ namespace mysa_backend
         private static void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IShooterScoreRepo, ShooterScoreRepo>();
+            services.AddScoped<IShootRepository, ShootRepository>();
+            services.AddScoped<IClubRepository, ClubRepository>();
         }
 
         private static void ConfigureDynamo(IServiceCollection services, bool isDev)

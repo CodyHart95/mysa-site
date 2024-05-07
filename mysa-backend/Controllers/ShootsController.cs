@@ -8,36 +8,113 @@ namespace mysa_backend.Controllers
     [Route("[controller]")]
     public class ShootsController : Controller
     {
-        private readonly IShooterScoreRepo shooterScoreRepo;
+        private readonly IShootRepository shootRepo;
+        private readonly IClubRepository clubRepo;
 
-        public ShootsController(IShooterScoreRepo shooterScoreRepo) 
+        public ShootsController(IShootRepository shootRepo, IClubRepository clubRepo) 
         {
-            this.shooterScoreRepo = shooterScoreRepo;
+            this.shootRepo = shootRepo;
+            this.clubRepo = clubRepo;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
-        {
-            return View();
-        }
-
-        [HttpPut]
-        public async Task<IActionResult> Put([FromBody] ShootScore scores)
+        public async Task<IActionResult> List([FromQuery] string paginationToken)
         {
             try
             {
-                // We should really batch save these, but for now this will work for testing
-                foreach (var score in scores.Scores)
-                {
-                    var entity = new ShooterScoreEntity(score.ShooterId, scores.ShootId);
-                    entity.Score = score.Score;
+                var shoots = await shootRepo.ListShoots(paginationToken);
 
-                    await shooterScoreRepo.SaveEntity(entity);
+                if(shoots == null)
+                {
+                    return Ok(new Shoot[0]);
+                }
+                var shootResponses = shoots.Select(s => new Shoot(s));
+                return Ok(shootResponses);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpGet]
+        [Route("/date")]
+        public async Task<IActionResult> ListByDate([FromQuery] DateTime date, [FromQuery] string paginationToken)
+        {
+            try
+            {
+                var shoots = await shootRepo.ListShootsByDate(date, paginationToken);
+
+                if (shoots == null)
+                {
+                    return Ok(new Shoot[0]);
+                }
+                var shootResponses = shoots.Select(s => new Shoot(s));
+                return Ok(shootResponses);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpGet]
+        [Route("/upcoming")]
+        public async Task<IActionResult> ListUpcoming([FromQuery] string paginationToken)
+        {
+            try
+            {
+                var shoots = await shootRepo.ListShootsAfterDate(DateTime.Now, paginationToken);
+
+                if (shoots == null)
+                {
+                    return Ok(new Shoot[0]);
                 }
 
+                var shootResponses = shoots.Select(s => new Shoot(s));
+                return Ok(shootResponses);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+
+        [HttpGet]
+        [Route("/club")]
+        public async Task<IActionResult> ListByClub([FromQuery] string clubName, [FromQuery] string paginationToken)
+        {
+            try
+            {
+                var shoots = await shootRepo.ListShootsByClub(clubName, paginationToken);
+
+                if (shoots == null)
+                {
+                    return Ok(new Shoot[0]);
+                }
+                var shootResponses = shoots.Select(s => new Shoot(s));
+                return Ok(shootResponses);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] Shoot shoot)
+        {
+            try
+            {
+                var shootEntity = new ShootEntity(shoot);
+                var clubEntity = new ClubEntity(shoot);
+
+                await shootRepo.SaveEntity(shootEntity);
+                await clubRepo.SaveEntity(clubEntity);
                 return Ok();
             }
-            catch(Exception ex)
+            catch
             {
                 return StatusCode(500);
             }

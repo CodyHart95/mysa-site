@@ -37,6 +37,28 @@ namespace mysa_backend.Repositories
             return null;
         }
 
+        protected async Task<T[]?> GetEntities(ScanOperationConfig scanConfig)
+        {
+            var table = context.GetTargetTable<T>();
+
+            var search = table.Scan(scanConfig);
+
+            var resultPage = await search.GetNextSetAsync();
+
+            return resultPage.Select(context.FromDocument<T>).ToArray();
+        }
+
+        protected async Task<T[]?> GetEntities(QueryOperationConfig queryConfig)
+        {
+            var table = context.GetTargetTable<T>();
+
+            var query = table.Query(queryConfig);
+
+            var resultPage = await query.GetNextSetAsync();
+
+            return resultPage.Select(context.FromDocument<T>).ToArray();
+        }
+
         protected async Task<T?> SaveEntity(T entity, Expression? conditionalExpression = null)
         {
             if (entity == null)
