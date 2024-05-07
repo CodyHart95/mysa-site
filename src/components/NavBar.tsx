@@ -1,10 +1,12 @@
 import { Box, styled, Link } from "@mui/material"
 import logo  from "../assets/mysa-logo.webp";
 import { useNavigate } from "react-router-dom";
+import { secondaryColor } from "../theme";
 
 interface Route {
     path: string;
     title: string;
+    subRoutes?: Route[];
 }
 interface NavBarProps {
     routes: Route[]
@@ -28,7 +30,11 @@ const classes = {
     },
     link: {
         textDecoration: "none",
-        marginRight: "8px"
+        marginRight: "8px",
+        color: secondaryColor,
+        "&:hover": {
+            cursor: "pointer"
+        }
     },
     routeContainer: {
         marginRight: "48px"

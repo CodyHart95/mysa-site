@@ -24,6 +24,7 @@ export const Theme = {
         h1: { fontSize: "4em", fontWeight: "bold", color: textPrimary },
         h2: { fontSize: "3em", color: textPrimary },
         h3: { fontSize: "2em", fontWeight: "bold", color: textPrimary },
+        h4: { fontSize: "1.5em", fontWeight: "bold", color: textPrimary },
         body1: { fontSize: "14px", fontWeight: 400, color: textPrimary },
         body2: { fontSize: "12px", fontWeight: 400, color: "#637381" },
         button: {
